@@ -167,15 +167,23 @@ app.post("/login", (req, res) => {
     req.login(user, (err) => {
         if (err) {
             console.log(err)
-            res.redirect("/login")
+            res.redirect("/")
         } else {
-            passport.authenticate("local")(req, res, () => {
-                res.redirect("/")
+            passport.authenticate("local", {
+                successRedirect: "/",
+                failureRedirect: "/login"
+            })(req, res, () => {
+
             })
         }
     })
 })
 
+
+app.get("/logout", (req, res) => {
+    req.logout();
+    res.redirect("/")
+})
 
 app.listen(3000, () => {
     console.log("Server Has Started on Port 3000")
