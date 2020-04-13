@@ -33,6 +33,10 @@ body{
   
    
 }
+
+.comment{
+    border-radius: 10px;
+}
 .navbar-brand:hover{
     color: #5BC3EB
 }

@@ -26,15 +26,23 @@ app.use(passport.session());
 
 
 app.set("view engine", "ejs")
+const commentSchema = mongoose.Schema({
+    name: String,
+    comment: String,
+    id: String
+})
 
+const Comment = new mongoose.model("comment", commentSchema);
 
 const postSchema = mongoose.Schema({
     title: String,
     content: String,
-    url: String
+    url: String,
+    comments: [commentSchema]
 })
 
 const Post = new mongoose.model("post", postSchema);
+
 
 const userSchema = mongoose.Schema({
     username: String,
@@ -85,7 +93,10 @@ app.get("/article/:id", (req, res) => {
     Post.findOne({ _id: id }, (err, result) => {
         if (!err) {
             if (result) {
-                res.render("post", { post: result })
+                Comment.find({ id: id }, (err, found) => {
+                    res.render("post", { post: result, comments: found })
+                })
+
 
             }
         }
@@ -131,6 +142,27 @@ app.get("/article/:id/edit", (req, res) => {
             }
         }
     })
+
+})
+
+app.get("/article/:id/comment", isLoggedIn, (req, res) => {
+    const id = req.params.id;
+    res.render("comment", { id: id })
+
+})
+
+app.post("/article/:id/comment", (req, res) => {
+    const name = req.body.name;
+    const comment = req.body.comment;
+    const id = req.body.id
+    const newComment = new Comment({
+        name: name,
+        comment: comment,
+        id: id
+    })
+    newComment.save();
+
+    res.redirect("/article/" + id)
 
 })
 
@@ -184,6 +216,14 @@ app.get("/logout", (req, res) => {
     req.logout();
     res.redirect("/")
 })
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next()
+    } else {
+        res.redirect("/login")
+    }
+}
 
 app.listen(3000, () => {
     console.log("Server Has Started on Port 3000")

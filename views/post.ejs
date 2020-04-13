@@ -7,10 +7,26 @@
             <p class="lead"><%= post.content %></p>
             <hr class="my-4">
 
-            <a class="btn btn-success btn-lg ml-2" href="/article/<%=post._id %>/edit" role="button">Update</a>
-            <form action="/article/<%=post._id %>?_method=DELETE" class="d-inline-block" method="POST">
-                <button class="btn btn-danger btn-lg ml-4" type="submit" role="button">Delete</a>
-            </form>
+            <div class="comment bg-white  mb-2">
+                <% for(let sub of comments){ %>
+                <div class="sub pl-2 pt-2">
+                    <h5 class="m-0"><%=sub.name %></h4>
+                        <p class="m-0"><%=sub.comment %></p>
+                </div>
+
+                <% } %>
+            </div>
+
+
+            <a class="btn btn-outline-primary btn-lg ml-2" href="/article/<%=post._id %>/comment" role="button">Add
+                Comment</a>
+            <div class="others d-inline-block">
+                <a class="btn btn-success btn-lg ml-2" href="/article/<%=post._id %>/edit" role="button">Update</a>
+
+                <form action="/article/<%=post._id %>?_method=DELETE" class="d-inline-block" method="POST">
+                    <button class="btn btn-danger btn-lg ml-4" type="submit" role="button">Delete</a>
+                </form>
+            </div>
     </div>
 </div>
 
