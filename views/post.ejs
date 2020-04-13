@@ -7,7 +7,10 @@
             <p class="lead"><%= post.content %></p>
             <hr class="my-4">
 
-            <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+            <a class="btn btn-success btn-lg ml-2" href="/article/<%=post._id %>/edit" role="button">Update</a>
+            <form action="/article/<%=post._id %>?_method=DELETE" class="d-inline-block" method="POST">
+                <button class="btn btn-danger btn-lg ml-4" type="submit" role="button">Delete</a>
+            </form>
     </div>
 </div>
 
