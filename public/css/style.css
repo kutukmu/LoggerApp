@@ -1,0 +1,63 @@
+@font-face{
+    src: url("./TheHistoriaDemo.ttf");
+    font-family: historia;
+}
+
+
+*{
+    box-sizing: border-box;
+}
+
+body{
+    margin:0;
+    padding:0;
+  
+  background-size: cover;
+  background-position: center;
+}
+
+.navbar{
+    background: #F06449;
+    
+}
+
+.navbar-brand{
+    color:black;
+    font-size:1.7rem;
+   margin-top: 0;
+   transition: ease-out .3s;
+   font-family: historia;
+  
+   
+}
+.navbar-brand:hover{
+    color: #5BC3EB
+}
+
+li a{
+    color: white;
+    font-weight: 600;
+    font-size:1rem;
+    
+    
+}
+li a:hover{
+    color:#5BC3EB
+}
+
+h1{
+    font-family: historia;
+        color:#5BC3EB;
+        letter-spacing: 1rem;
+        text-transform: uppercase;
+}
+
+.media{
+    padding:1rem;
+    width: 60%;
+    box-shadow: .3rem .3rem .3rem rgba(88, 88, 88, 0.767);
+     border-radius: 5px;
+    background: rgba(228, 228, 228, 0.836);
+    
+}
+
