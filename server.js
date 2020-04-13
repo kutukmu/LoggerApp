@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -13,13 +14,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
 app.use(session({
-    secret: process.env.SECRET,
+    secret: "mylittlesecret",
     resave: false,
     saveUninitialized: false
 }))
 
 app.use(passport.initialize());
-app.use(passport.sessio());
+app.use(passport.session());
 
 
 
@@ -138,6 +139,19 @@ app.get("/article/:id/edit", (req, res) => {
 
 app.get("/register", (req, res) => {
     res.render("register")
+})
+
+app.post("/register", (req, res) => {
+    User.register({ username: req.body.username }, req.body.password, (err, result) => {
+        if (err) {
+            console.log(err)
+            res.redirect("/register")
+        } else {
+            passport.authenticate("local")(req, res, () => {
+                res.redirect("/")
+            })
+        }
+    })
 })
 
 app.get("/login", (req, res) => {
