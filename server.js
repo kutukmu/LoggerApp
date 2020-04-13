@@ -158,6 +158,25 @@ app.get("/login", (req, res) => {
     res.render("login")
 })
 
+app.post("/login", (req, res) => {
+
+    const user = new User({
+        username: req.body.username,
+        password: req.body.password
+    })
+    req.login(user, (err) => {
+        if (err) {
+            console.log(err)
+            res.redirect("/login")
+        } else {
+            passport.authenticate("local")(req, res, () => {
+                res.redirect("/")
+            })
+        }
+    })
+})
+
+
 app.listen(3000, () => {
     console.log("Server Has Started on Port 3000")
 })
