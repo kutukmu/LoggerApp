@@ -1,0 +1,16 @@
+<%- include ("./partials/header") -%>
+
+<div class="jumbotron d-flex ">
+    <img src="<%= post.url %>" class="img-fluid" alt="Responsive image">
+    <div class="container">
+        <h2 class="display-4 text-center"><%= post.title %></h1>
+            <p class="lead"><%= post.content %></p>
+            <hr class="my-4">
+
+            <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+    </div>
+</div>
+
+
+
+<%- include ("./partials/footer") -%>

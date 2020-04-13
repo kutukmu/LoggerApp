@@ -10,13 +10,57 @@ mongoose.connect("mongodb://localhost:27017/loggerApp", { useUnifiedTopology: tr
 app.set("view engine", "ejs")
 
 
+const postSchema = mongoose.Schema({
+    title: String,
+    content: String,
+    url: String
+})
+
+const Post = new mongoose.model("post", postSchema);
+
+
+
 app.get("/", (req, res) => {
-    res.render("home")
+    Post.find({}, (err, result) => {
+        if (!err) {
+            if (result) {
+                res.render("home", { posts: result })
+            }
+        }
+    })
+
 })
 
 app.get("/article", (req, res) => {
     res.render("article")
 })
+
+app.post("/article", (req, res) => {
+    const { title, url, content } = req.body;
+    const newPost = new Post({
+        title: title,
+        content: content,
+        url: url
+    })
+
+    newPost.save();
+
+    res.redirect("/")
+})
+
+app.get("/article/:id", (req, res) => {
+    const title = req.params.id;
+    Post.findOne({ title: title }, (err, result) => {
+        if (!err) {
+            if (result) {
+                res.render("post", { post: result })
+            }
+        }
+    })
+
+
+})
+
 
 
 app.get("/register", (req, res) => {

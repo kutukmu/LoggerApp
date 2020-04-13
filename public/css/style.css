@@ -7,6 +7,9 @@
 *{
     box-sizing: border-box;
 }
+.homeimg{
+    width: 100px;
+}
 
 body{
     margin:0;

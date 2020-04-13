@@ -1,14 +1,18 @@
 <%- include("partials/header") -%>
 <div class="jumbotron">
     <h1 class="display-4 text-center"> Create Post</h1>
-    <form class="w-75 mx-auto">
+    <form class="w-75 mx-auto" action="/article" method="POST">
         <div class="form-group">
-            <label for="email">Title</label>
-            <input type="email" class="form-control" id="email" aria-describedby="emailHelp">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" aria-describedby="emailHelp" name="title">
+        </div>
+        <div class="form-group">
+            <label for="url">Url</label>
+            <input type="text" class="form-control" id="url" aria-describedby="emailHelp" name="url">
         </div>
         <div class="form-group">
             <label for="content">Content</label>
-            <textarea class="form-control" id="content" rows="4"></textarea>
+            <textarea class="form-control" id="content" rows="4" name="content"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
