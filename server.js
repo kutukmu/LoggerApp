@@ -9,6 +9,8 @@ const passportlocalMongoose = require("passport-local-mongoose");
 const methodOverride = require("method-override")
 const app = express();
 
+console.log(process.env.PASSWORD)
+
 app.use(express.static("public"))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
@@ -17,7 +19,7 @@ app.use((req, res, next) => {
     next();
 })
 app.use(session({
-    secret: "mylittlesecret",
+    secret: `${process.env.SECRET}`,
     resave: false,
     saveUninitialized: false
 }))
@@ -32,7 +34,8 @@ app.set("view engine", "ejs")
 const commentSchema = mongoose.Schema({
     name: String,
     comment: String,
-    id: String
+    id: String,
+
 })
 
 const Comment = new mongoose.model("comment", commentSchema);
@@ -42,7 +45,8 @@ const postSchema = mongoose.Schema({
     content: String,
     url: String,
     comments: [commentSchema],
-    username: String
+    username: String,
+    userid: String
 })
 
 const Post = new mongoose.model("post", postSchema);
@@ -51,7 +55,8 @@ const Post = new mongoose.model("post", postSchema);
 const userSchema = mongoose.Schema({
     username: String,
     password: String,
-    posts: [postSchema]
+    posts: [postSchema],
+    comment: [commentSchema]
 
 })
 userSchema.plugin(passportlocalMongoose)
@@ -62,7 +67,7 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-mongoose.connect("mongodb://localhost:27017/loggerApp", { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
+mongoose.connect(`mongodb+srv://kerim:${process.env.PASSWORD}@cluster0-m839r.mongodb.net/loggerApp`, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
 mongoose.set("useCreateIndex", true)
 app.get("/", (req, res) => {
     const currentUser = req.user
@@ -87,7 +92,8 @@ app.post("/article", (req, res) => {
         title: title,
         content: content,
         url: url,
-        username: req.user.username
+        username: req.user.username,
+        userid: req.user._id
     })
 
     newPost.save();
@@ -102,7 +108,15 @@ app.get("/article/:id", (req, res) => {
         if (!err) {
             if (result) {
                 Comment.find({ id: id }, (err, found) => {
-                    res.render("post", { post: result, comments: found, currentUser: req.user })
+                    let isSame = false;
+                    if (req.user) {
+                        if (result.userid == req.user._id) {
+                            isSame = true;
+                        }
+                    }
+
+                    res.render("post", { post: result, comments: found, currentUser: req.user, isSame: isSame })
+                    console.log(isSame)
                 })
 
 
@@ -113,10 +127,11 @@ app.get("/article/:id", (req, res) => {
 
 })
 
-app.put("/article/:id", (req, res) => {
+app.patch("/article/:id", (req, res) => {
     const id = req.params.id;
 
     Post.findOneAndUpdate({ _id: id }, {
+        username: req.user.username,
         title: req.body.title,
         url: req.body.url,
         content: req.body.content
@@ -174,6 +189,44 @@ app.post("/article/:id/comment", (req, res) => {
 
 })
 
+app.get("/article/:id/comment/:com_id/edit", (req, res) => {
+    const postid = req.params.id;
+    const commentid = req.params.com_id;
+
+    Comment.findOne({ _id: commentid }, (err, found) => {
+        if (!err) {
+            if (found) {
+                console.log(found)
+                res.render("commentedit", { found: found })
+            }
+
+        }
+
+    })
+
+
+})
+app.put("/article/:id/comment/:com_id", (req, res) => {
+    const com_id = req.params.com_id;
+    const comment = req.body.comment;
+
+    Comment.findOneAndUpdate({ _id: com_id }, { comment: comment }, (err, result) => {
+        if (!err) {
+            res.redirect("/article/" + req.params.id)
+        }
+    })
+
+
+})
+
+app.delete("/article/:id/comment/:com_id", (req, res) => {
+    const com_id = req.params.com_id;
+    Comment.findOneAndRemove({ _id: com_id }, (err, result) => {
+        if (!err) {
+            res.redirect("/article/" + req.params.id)
+        }
+    })
+})
 
 
 

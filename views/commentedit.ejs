@@ -1,0 +1,14 @@
+<%- include("partials/header") -%>
+<div class="jumbotron com">
+    <h3 class="display-4 text-center ">Edit Comment</h3>
+    <form class="w-50 mx-auto" action="/article/<%= found.id %>/comment/<%=found._id %>?_method=PUT" method="POST">
+        <div class="form-group">
+            <label for="comment">Comment</label>
+            <input type="text" name="comment" class="form-control" id="comment" value="<%= found.comment %>">
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+</div>
+
+<%- include("partials/footer") -%>

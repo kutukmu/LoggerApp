@@ -9,9 +9,25 @@
 
             <div class="comment bg-white  mb-2">
                 <% for(let sub of comments){ %>
-                <div class="sub pl-2 pt-2">
-                    <h5 class="m-0"><%=sub.name %></h4>
-                        <p class="m-0"><%=sub.comment %></p>
+                <div class="sub pl-2 pt-2 ">
+                    <h5 class="m-0  d-inline-block"><%=sub.name %></h4>
+                        <p class="m-0  d-inline-block"><%=sub.comment %></p>
+                        <% if(currentUser){%>
+                        <% if(sub.name == currentUser.username){ %>
+                        <div class="custom">
+                            <a href="/article/<%= post._id %>/comment/<%= sub._id %>/edit"
+                                class="btn btn-primary btn-sm">edit</a>
+                            <form action="/article/<%= post._id %>/comment/<%= sub._id %>?_method=DELETE"
+                                class="d-inline-block" method="POST">
+                                <button type="submit" class="btn btn-warning btn-sm">delete</button>
+                            </form>
+
+                        </div>
+                        <%  } %>
+                        <%   } %>
+
+
+
                 </div>
 
                 <% } %>
@@ -20,6 +36,7 @@
 
             <a class="btn btn-outline-primary btn-lg ml-2" href="/article/<%=post._id %>/comment" role="button">Add
                 Comment</a>
+            <% if(isSame){ %>
             <div class="others d-inline-block">
                 <a class="btn btn-success btn-lg ml-2" href="/article/<%=post._id %>/edit" role="button">Update</a>
 
@@ -27,6 +44,8 @@
                     <button class="btn btn-danger btn-lg ml-4" type="submit" role="button">Delete</a>
                 </form>
             </div>
+            <% } %>
+
     </div>
 </div>
 

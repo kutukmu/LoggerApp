@@ -10,7 +10,28 @@
 .homeimg{
     width: 100px;
 }
-
+.or{
+    
+    position: relative;
+}
+.or::before{
+    content:"";
+    position: absolute;
+    top:15px;
+    left: 50px;
+    width:30vw;
+    height: 1px;
+    background-color: rgba(145, 145, 150, 0.651);
+}
+.or::after{
+    content:"";
+    position: absolute;
+    top:15px;
+    right: 50px;
+    width:30vw;
+    height: 1px;
+    background-color: rgba(145, 145, 150, 0.651);
+}
 body{
     margin:0;
     padding:0;
@@ -36,7 +57,8 @@ body{
 .created{
  position: absolute;
  top:0;
-right: 0;}
+right: 0;
+}
 .media-body{
    position: relative;
 }
@@ -50,6 +72,31 @@ right: 0;}
 } 
 .comment{
     border-radius: 10px;
+}
+
+.firstAlert:hover{
+    
+text-decoration: none;  
+color:rgba(150, 120, 36, 0.925);  
+}
+.google{
+    justify-content: space-around;
+}
+.facebook{
+    background-color: #4267B2;
+    color:white
+}
+.sub{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    position: relative;
+}
+.custom{
+    position: absolute;
+    top:1rem;
+    right: 0;
 }
 .navbar-brand:hover{
     color: #5BC3EB

@@ -1,7 +1,7 @@
 <%- include("partials/header") -%>
 <div class="jumbotron">
     <h1 class="display-4 text-center"> Update Post</h1>
-    <form class="w-75 mx-auto" action="/article/<%= post._id %>?_method=PUT" method="POST">
+    <form class="w-75 mx-auto" action="/article/<%= post._id %>?_method=PATCH" method="POST">
         <div class="form-group">
             <label for="title">Title</label>
             <input type="text" value="<%= post.title %>" class="form-control" id="title" aria-describedby="emailHelp"
