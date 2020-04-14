@@ -31,7 +31,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "https://sheltered-wildwood-71518.herokuapp.com//auth/google/article",
+    callbackURL: "https://sheltered-wildwood-71518.herokuapp.com/auth/google/article",
     userProfileURL: "https://www.google.com/oauth2/v3/userinfo"
 },
     function (accessToken, refreshToken, profile, cb) {
