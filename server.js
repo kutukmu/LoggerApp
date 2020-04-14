@@ -8,18 +8,18 @@ const localStrategy = require("passport-local");
 const passportlocalMongoose = require("passport-local-mongoose");
 const methodOverride = require("method-override")
 const findOrCreate = require("mongoose-findorcreate")
-//const GoogleStrategy = require('passport-google-oauth2').Strategy;
+const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const app = express();
 
 
 
 app.use(express.static("public"))
+app.set("view engine", "ejs")
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.use((req, res, next) => {
-    res.locals.currentUser = req.user;
-    next();
-})
+
+
+
 app.use(session({
     secret: `${process.env.SECRET}`,
     resave: false,
@@ -28,25 +28,67 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-// passport.use(new GoogleStrategy({
-//     clientID: process.env.CLIENT_ID,
-//     clientSecret: process.env.CLIENT_SECRET,
-//     callbackURL: "https://localhost:3000/auth/google/article",
-//     userProfileURL: "https://www.google.com/oauth2/v3/userinfo"
-// },
-//     function (accessToken, refreshToken, profile, cb) {
-//         console.log(profile)
-//         User.findOrCreate({ googleId: profile.id, googleName: profile.name.givenName }, function (err, user) {
-//             return cb(err, user);
-//         });
-//     }
-// ));
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
+    next();
+})
+
+mongoose.connect(`mongodb+srv://kerim:${process.env.PASSWORD}@cluster0-m839r.mongodb.net/loggerApp`, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
+mongoose.set("useCreateIndex", true)
+const userSchema = mongoose.Schema({
+    username: String,
+    password: String,
+    posts: [postSchema],
+    comment: [commentSchema],
+    // googleId: String,
+    //googleName: String
+
+})
+userSchema.plugin(passportlocalMongoose)
+userSchema.plugin(findOrCreate)
+
+const User = new mongoose.model("user", userSchema);
+User.collection.indexExists({ "username": 1 }, function (err, results) {
+    console.log(results);
+    if (results === true) {
+        // Dropping an Index in MongoDB
+        User.collection.dropIndex({ "username": 1 }, function (err, res) {
+            if (err) {
+                console.log('Error in dropping index!', err);
+            }
+        });
+    } else {
+        console.log("Index doesn't exisit!");
+    }
+});
 
 
+passport.use(User.createStrategy());
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+    User.findById(id, function (err, user) {
+        done(err, user);
+    });
+});
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    callbackURL: "https://sheltered-wildwood-71518.herokuapp.com//auth/google/article",
+    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+},
+    function (accessToken, refreshToken, profile, cb) {
+        console.log(profile)
+        User.findOrCreate({ googleId: profile.id, googleName: profile.name.givenName }, function (err, user) {
+            return cb(err, user);
+        });
+    }
+));
 
 
-
-app.set("view engine", "ejs")
 const commentSchema = mongoose.Schema({
     name: String,
     comment: String,
@@ -68,30 +110,18 @@ const postSchema = mongoose.Schema({
 const Post = new mongoose.model("post", postSchema);
 
 
-const userSchema = mongoose.Schema({
-    username: String,
-    password: String,
-    posts: [postSchema],
-    comment: [commentSchema],
-    // googleId: String,
-    //googleName: String
 
-})
-userSchema.plugin(passportlocalMongoose)
-userSchema.plugin(findOrCreate)
 
-const User = new mongoose.model("user", userSchema)
 
-passport.use(User.createStrategy());
-passport.serializeUser(function (user, done) {
-    done(null, user.id);
-});
 
-passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
-        done(err, user);
-    });
-});
+
+
+
+
+
+
+
+
 
 //FAcebook Auth//
 
@@ -99,8 +129,7 @@ passport.deserializeUser(function (id, done) {
 
 //Fcebook //
 
-mongoose.connect(`mongodb+srv://kerim:${process.env.PASSWORD}@cluster0-m839r.mongodb.net/loggerApp`, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
-mongoose.set("useCreateIndex", true)
+
 app.get("/", (req, res) => {
     const currentUser = req.user
     Post.find({}, (err, result) => {
@@ -114,15 +143,15 @@ app.get("/", (req, res) => {
 
 })
 
-// app.get("/auth/google",
-//     passport.authenticate("google", { scope: ["profile"] }));
+app.get("/auth/google",
+    passport.authenticate("google", { scope: ["profile"] }));
 
-// app.get("/auth/google/article",
-//     passport.authenticate("google", { failureRedirect: "/login" }),
-//     function (req, res) {
-//         // Successful authentication, redirect home.
-//         res.redirect("/article");
-//     });
+app.get("/auth/google/article",
+    passport.authenticate("google", { failureRedirect: "/login" }),
+    function (req, res) {
+        // Successful authentication, redirect home.
+        res.redirect("/article");
+    });
 
 app.get("/article", isLoggedIn, (req, res) => {
     res.render("article", { currentUser: req.user })
