@@ -36,7 +36,7 @@ passport.use(new GoogleStrategy({
 },
     function (accessToken, refreshToken, profile, cb) {
         console.log(profile)
-        User.findOrCreate({ googleId: profile.id }, function (err, user) {
+        User.findOrCreate({ googleId: profile.id, googleName: profile.name.givenName }, function (err, user) {
             return cb(err, user);
         });
     }
@@ -73,7 +73,8 @@ const userSchema = mongoose.Schema({
     password: String,
     posts: [postSchema],
     comment: [commentSchema],
-    googleId: String
+    googleId: String,
+    googleName: String
 
 })
 userSchema.plugin(passportlocalMongoose)
@@ -91,6 +92,12 @@ passport.deserializeUser(function (id, done) {
         done(err, user);
     });
 });
+
+//FAcebook Auth//
+
+
+
+//Fcebook //
 
 mongoose.connect(`mongodb+srv://kerim:${process.env.PASSWORD}@cluster0-m839r.mongodb.net/loggerApp`, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
 mongoose.set("useCreateIndex", true)
@@ -127,7 +134,7 @@ app.post("/article", (req, res) => {
         title: title,
         content: content,
         url: url,
-        username: req.user.username,
+        username: req.user.googleName,
         userid: req.user._id
     })
 
