@@ -22,15 +22,21 @@
             <li class="nav-item mr-auto">
                 <a class="nav-link p-3" href="/article">Create Post</a>
             </li>
+
+            <%  if(!currentUser){ %>
             <li class="nav-item ">
                 <a class="nav-link p-3" href="/register"><i class="fas fa-user-plus mr-2"></i>Register</a>
             </li>
             <li class="nav-item end ">
                 <a class="nav-link  p-3" href="/login"><i class="fas fa-sign-in-alt mr-2"></i>Login</a>
             </li>
+            <%    }else{ %>
             <li class="nav-item end ">
                 <a class="nav-link  p-3" href="/logout"><i class="fas fa-sign-in-alt mr-2"></i>Logout</a>
             </li>
+            <%}%>
+           
+           
         </ul>
     </nav>
     <div class="container mt-3 ">

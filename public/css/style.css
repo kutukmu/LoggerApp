@@ -33,7 +33,10 @@ body{
   
    
 }
-
+.com{
+    background: rgba(26, 143, 151, 0.349);
+    border-radius: 20px;
+} 
 .comment{
     border-radius: 10px;
 }

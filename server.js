@@ -12,7 +12,10 @@ const app = express();
 app.use(express.static("public"))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
+    next();
+})
 app.use(session({
     secret: "mylittlesecret",
     resave: false,
@@ -60,10 +63,11 @@ passport.deserializeUser(User.deserializeUser());
 mongoose.connect("mongodb://localhost:27017/loggerApp", { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
 mongoose.set("useCreateIndex", true)
 app.get("/", (req, res) => {
+    const currentUser = req.user
     Post.find({}, (err, result) => {
         if (!err) {
             if (result) {
-                res.render("home", { posts: result })
+                res.render("home", { posts: result, currentUser: req.user })
             }
         }
     })
@@ -71,7 +75,7 @@ app.get("/", (req, res) => {
 })
 
 app.get("/article", (req, res) => {
-    res.render("article")
+    res.render("article", { currentUser: req.user })
 })
 
 app.post("/article", (req, res) => {
@@ -94,7 +98,7 @@ app.get("/article/:id", (req, res) => {
         if (!err) {
             if (result) {
                 Comment.find({ id: id }, (err, found) => {
-                    res.render("post", { post: result, comments: found })
+                    res.render("post", { post: result, comments: found, currentUser: req.user })
                 })
 
 
@@ -138,7 +142,7 @@ app.get("/article/:id/edit", (req, res) => {
     Post.findOne({ _id: id }, (err, result) => {
         if (!err) {
             if (result) {
-                res.render("edit", { post: result })
+                res.render("edit", { post: result, currentUser: req.user })
             }
         }
     })
@@ -147,7 +151,7 @@ app.get("/article/:id/edit", (req, res) => {
 
 app.get("/article/:id/comment", isLoggedIn, (req, res) => {
     const id = req.params.id;
-    res.render("comment", { id: id })
+    res.render("comment", { id: id, currentUser: req.user })
 
 })
 
@@ -170,7 +174,7 @@ app.post("/article/:id/comment", (req, res) => {
 
 
 app.get("/register", (req, res) => {
-    res.render("register")
+    res.render("register", { currentUser: req.user })
 })
 
 app.post("/register", (req, res) => {
@@ -187,7 +191,7 @@ app.post("/register", (req, res) => {
 })
 
 app.get("/login", (req, res) => {
-    res.render("login")
+    res.render("login", { currentUser: req.user })
 })
 
 app.post("/login", (req, res) => {
