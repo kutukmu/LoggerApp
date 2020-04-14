@@ -13,7 +13,7 @@
                     <h5 class="m-0  d-inline-block"><%=sub.name %></h4>
                         <p class="m-0  d-inline-block"><%=sub.comment %></p>
                         <% if(currentUser){%>
-                        <% if(sub.name == currentUser.username||currentUser.googleName||currentUser.facebookName){ %>
+                        <% if(sub.name === currentUser.username||currentUser.googleName||currentUser.facebookName){ %>
                         <div class="custom">
                             <a href="/article/<%= post._id %>/comment/<%= sub._id %>/edit"
                                 class="btn btn-primary btn-sm">edit</a>
