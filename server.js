@@ -7,9 +7,11 @@ const passport = require("passport");
 const localStrategy = require("passport-local");
 const passportlocalMongoose = require("passport-local-mongoose");
 const methodOverride = require("method-override")
+const findOrCreate = require("mongoose-findorcreate")
+const GoogleStrategy = require('passport-google-oauth2').Strategy;
 const app = express();
 
-console.log(process.env.PASSWORD)
+
 
 app.use(express.static("public"))
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -26,6 +28,20 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+passport.use(new GoogleStrategy({
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/google/article",
+    userProfileURL: "https://www.google.com/oauth2/v3/userinfo"
+},
+    function (accessToken, refreshToken, profile, cb) {
+        console.log(profile)
+        User.findOrCreate({ googleId: profile.id }, function (err, user) {
+            return cb(err, user);
+        });
+    }
+));
+
 
 
 
@@ -56,16 +72,25 @@ const userSchema = mongoose.Schema({
     username: String,
     password: String,
     posts: [postSchema],
-    comment: [commentSchema]
+    comment: [commentSchema],
+    googleId: String
 
 })
 userSchema.plugin(passportlocalMongoose)
+userSchema.plugin(findOrCreate)
 
 const User = new mongoose.model("user", userSchema)
 
 passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+    User.findById(id, function (err, user) {
+        done(err, user);
+    });
+});
 
 mongoose.connect(`mongodb+srv://kerim:${process.env.PASSWORD}@cluster0-m839r.mongodb.net/loggerApp`, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
 mongoose.set("useCreateIndex", true)
@@ -81,6 +106,16 @@ app.get("/", (req, res) => {
     })
 
 })
+
+app.get("/auth/google",
+    passport.authenticate("google", { scope: ["profile"] }));
+
+app.get("/auth/google/article",
+    passport.authenticate("google", { failureRedirect: "/login" }),
+    function (req, res) {
+        // Successful authentication, redirect home.
+        res.redirect("/article");
+    });
 
 app.get("/article", isLoggedIn, (req, res) => {
     res.render("article", { currentUser: req.user })

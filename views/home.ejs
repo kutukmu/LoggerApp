@@ -1,10 +1,13 @@
 <%- include ("./partials/header") -%>
 <h1 class="text-center">Posts</h1>
+<%if(!currentUser){ %>
 <div class="alert alert-primary" role="alert">
     <a href="/article" class="firstAlert">
         <h2>Create Your Post</h2>
     </a>
 </div>
+<%}%>
+
 <% for(let sub of posts) { %>
 
 <div class="media-container">
