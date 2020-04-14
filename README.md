@@ -41,9 +41,9 @@ To add the new post,  first login with your Google Account or Facebook, or if yo
 ### Built With 
 
 - [NPM](https://www.npmjs.com/)
--[NodeJS](https://nodejs.org/en/)
--[MongoDB](https://www.mongodb.com/cloud/atlas)
--[Mongoose](https://mongoosejs.com/)
+- [NodeJS](https://nodejs.org/en/)
+- [MongoDB](https://www.mongodb.com/cloud/atlas)
+- [Mongoose](https://mongoosejs.com/)
 
 ### Authors
 
