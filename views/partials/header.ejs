@@ -32,6 +32,9 @@
             </li>
             <%    }else{ %>
             <li class="nav-item end ">
+                <a class="nav-link  p-3" href="#">Signed in <span class="name"><%= currentUser.username %></span> </a>
+            </li>
+            <li class="nav-item end ">
                 <a class="nav-link  p-3" href="/logout"><i class="fas fa-sign-in-alt mr-2"></i>Logout</a>
             </li>
             <%}%>

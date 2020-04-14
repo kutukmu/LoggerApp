@@ -41,7 +41,8 @@ const postSchema = mongoose.Schema({
     title: String,
     content: String,
     url: String,
-    comments: [commentSchema]
+    comments: [commentSchema],
+    username: String
 })
 
 const Post = new mongoose.model("post", postSchema);
@@ -50,6 +51,7 @@ const Post = new mongoose.model("post", postSchema);
 const userSchema = mongoose.Schema({
     username: String,
     password: String,
+    posts: [postSchema]
 
 })
 userSchema.plugin(passportlocalMongoose)
@@ -67,6 +69,7 @@ app.get("/", (req, res) => {
     Post.find({}, (err, result) => {
         if (!err) {
             if (result) {
+                console.log(result)
                 res.render("home", { posts: result, currentUser: req.user })
             }
         }
@@ -74,7 +77,7 @@ app.get("/", (req, res) => {
 
 })
 
-app.get("/article", (req, res) => {
+app.get("/article", isLoggedIn, (req, res) => {
     res.render("article", { currentUser: req.user })
 })
 
@@ -83,7 +86,8 @@ app.post("/article", (req, res) => {
     const newPost = new Post({
         title: title,
         content: content,
-        url: url
+        url: url,
+        username: req.user.username
     })
 
     newPost.save();

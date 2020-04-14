@@ -33,6 +33,17 @@ body{
   
    
 }
+.created{
+ position: absolute;
+ top:0;
+right: 0;}
+.media-body{
+   position: relative;
+}
+.name{
+    
+    color:rgb(72, 228, 255)
+}
 .com{
     background: rgba(26, 143, 151, 0.349);
     border-radius: 20px;

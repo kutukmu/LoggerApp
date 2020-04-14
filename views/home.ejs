@@ -3,12 +3,16 @@
 <% for(let sub of posts) { %>
 
 <div class="media-container">
+
     <div class="media mx-auto mt-3">
         <img src="<%= sub.url %>" class="mr-3 homeimg" alt="...">
-        <div class="media-body">
+
+        <div class="media-body flex-column">
+            <p class="d-inline-block created">Created by :<b class="text-primary"> <%= sub.username %></b></p>
             <h5 class="mt-0"><%= sub.title %></h5>
             <p> <%=sub.content.substring(0,100) %>...</p>
             <a href="/article/<%=sub._id %>" class="btn btn-outline-primary"> Read more</a>
+
         </div>
 
     </div>
