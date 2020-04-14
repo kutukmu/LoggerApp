@@ -4,8 +4,9 @@
     <form class="w-50 mx-auto" action="/article/<%= id %>/comment" method="POST">
         <div class="form-group">
             <label for="name">Name</label>
-            <input type="text" class="form-control" value="<%= currentUser.username %>" name="name" id="username"
-                aria-describedby="emailHelp">
+            <input type="text" class="form-control"
+                value="<%= currentUser.username||currentUser.googleName||currentUser.facebookName %>" name="name"
+                id="username" aria-describedby="emailHelp">
         </div>
         <div class="form-group">
             <label for="comment">Comment</label>

@@ -1,31 +1,5 @@
 <%- include ("./partials/header") -%>
-<script>
-    // window.fbAsyncInit = function () {
-    //     FB.init({
-    //         appId: `${process.env.FACEBOOK_ID}`,
-    //         cookie: true,
-    //         xfbml: true,
-    //         version: 'v6.0'
-    //     });
 
-    //     FB.AppEvents.logPageView();
-
-    // };
-
-    // (function (d, s, id) {
-    //     const js, fjs = d.getElementsByTagName(s)[0];
-    //     if (d.getElementById(id)) { return; }
-    //     js = d.createElement(s); js.id = id;
-    //     js.src = "https://connect.facebook.net/en_US/sdk.js";
-    //     fjs.parentNode.insertBefore(js, fjs);
-    // }(document, 'script', 'facebook-jssdk'));
-
-    // FB.getLoginStatus(function (response) {
-    //     statusChangeCallback(response);
-
-    // });
-
-</script>
 
 <h1 class="text-center">Posts</h1>
 <%if(!currentUser){ %>
@@ -44,7 +18,8 @@
         <img src="<%= sub.url %>" class="mr-3 homeimg" alt="...">
 
         <div class="media-body flex-column">
-            <p class="d-inline-block created">Created by :<b class="text-primary"> <%= sub.username %></b></p>
+            <p class="d-inline-block created">Created by :<b class="text-primary">
+                    <%= sub.username %></b></p>
             <h5 class="mt-0"><%= sub.title %></h5>
             <p> <%=sub.content.substring(0,100) %>...</p>
             <a href="/article/<%=sub._id %>" class="btn btn-outline-primary"> Read more</a>

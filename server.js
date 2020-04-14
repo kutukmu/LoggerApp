@@ -9,6 +9,7 @@ const passportlocalMongoose = require("passport-local-mongoose");
 const methodOverride = require("method-override")
 const findOrCreate = require("mongoose-findorcreate")
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const app = express();
 
 
@@ -31,12 +32,25 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/register/auth/google/article",
+    callbackURL: "http://localhost:3000/auth/google/article",
     userProfileURL: "https://www.google.com/oauth2/v3/userinfo"
 },
     function (accessToken, refreshToken, profile, cb) {
         console.log(profile)
-        User.findOrCreate({ googleId: profile.id, googleName: profile.name.givenName }, function (err, user) {
+        User.findOrCreate({ googleId: profile.id, googleName: profile.given_name }, function (err, user) {
+            return cb(err, user);
+        });
+    }
+));
+passport.use(new FacebookStrategy({
+    clientID: process.env.FACEBOOK_ID,
+    clientSecret: process.env.FACEBOOK_SECRET,
+    callbackURL: "http://localhost:3000/auth/facebook/article",
+    //callbackURL: "https://gentle-taiga-85346.herokuapp.com/auth/facebook/secrets"
+},
+    function (accessToken, refreshToken, profile, cb) {
+        console.log(profile)
+        User.findOrCreate({ facebookId: profile.id, facebookName: profile.displayName }, function (err, user) {
             return cb(err, user);
         });
     }
@@ -74,7 +88,9 @@ const userSchema = mongoose.Schema({
     posts: [postSchema],
     comment: [commentSchema],
     googleId: String,
-    googleName: String
+    googleName: String,
+    facebookId: String,
+    facebookName: String
 
 })
 userSchema.plugin(passportlocalMongoose)
@@ -92,12 +108,6 @@ passport.deserializeUser(function (id, done) {
         done(err, user);
     });
 });
-
-//FAcebook Auth//
-
-
-
-//Fcebook //
 
 mongoose.connect(`mongodb+srv://kerim:${process.env.PASSWORD}@cluster0-m839r.mongodb.net/loggerApp`, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
 mongoose.set("useCreateIndex", true)
@@ -123,6 +133,14 @@ app.get("/auth/google/article",
         // Successful authentication, redirect home.
         res.redirect("/article");
     });
+app.get('/auth/facebook', passport.authenticate('facebook'));
+
+app.get('/auth/facebook/article',
+    passport.authenticate('facebook', { failureRedirect: '/login' }),
+    function (req, res) {
+        res.redirect('/article');
+    });
+
 
 app.get("/article", isLoggedIn, (req, res) => {
     res.render("article", { currentUser: req.user })
@@ -134,7 +152,7 @@ app.post("/article", (req, res) => {
         title: title,
         content: content,
         url: url,
-        username: req.user.googleName,
+        username: req.user.username || req.user.googleName || req.user.facebookName,
         userid: req.user._id
     })
 

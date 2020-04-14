@@ -1,7 +1,4 @@
 <%- include("partials/header") -%>
-<div id="fb-root"></div>
-<script async defer crossorigin="anonymous"
-    src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v6.0&appId=882593465535350&autoLogAppEvents=1"></script>
 <div class="jumbotron">
     <h1 class="display-4 text-center"> Register</h1>
     <form class="w-50 mx-auto mb-3" action="/register" method="POST">
@@ -20,10 +17,9 @@
     </div>
     <div class="google w-50 m-auto d-flex ">
         <a href="/auth/google" class="btn btn-danger"><i class="fab fa-google mr-4"></i>Login with Google+</a>
-        <div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="default"
-            data-auto-logout-link="false" data-use-continue-as="false"></div>
-    </div>
+        <a href="/auth/facebook" class="btn facebook"><i class="fab fa-facebook mr-4"></i>Login with Facebook</a>
 
+    </div>
 
 </div>
 <%- include("partials/footer") -%>
