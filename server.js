@@ -14,12 +14,12 @@ const app = express();
 
 
 app.use(express.static("public"))
-app.set("view engine", "ejs")
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-
-
-
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
+    next();
+})
 app.use(session({
     secret: `${process.env.SECRET}`,
     resave: false,
@@ -28,57 +28,11 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use((req, res, next) => {
-    res.locals.currentUser = req.user;
-    next();
-})
-
-mongoose.connect(`mongodb+srv://kerim:${process.env.PASSWORD}@cluster0-m839r.mongodb.net/loggerApp`, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
-mongoose.set("useCreateIndex", true)
-const userSchema = mongoose.Schema({
-    username: String,
-    password: String,
-    posts: [postSchema],
-    comment: [commentSchema],
-    // googleId: String,
-    //googleName: String
-
-})
-userSchema.plugin(passportlocalMongoose)
-userSchema.plugin(findOrCreate)
-
-const User = new mongoose.model("user", userSchema);
-User.collection.indexExists({ "username": 1 }, function (err, results) {
-    console.log(results);
-    if (results === true) {
-        // Dropping an Index in MongoDB
-        User.collection.dropIndex({ "username": 1 }, function (err, res) {
-            if (err) {
-                console.log('Error in dropping index!', err);
-            }
-        });
-    } else {
-        console.log("Index doesn't exisit!");
-    }
-});
-
-
-passport.use(User.createStrategy());
-passport.serializeUser(function (user, done) {
-    done(null, user.id);
-});
-
-passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
-        done(err, user);
-    });
-});
-
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "https://sheltered-wildwood-71518.herokuapp.com//auth/google/article",
-    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+    callbackURL: "http://localhost:3000/register/auth/google/article",
+    userProfileURL: "https://www.google.com/oauth2/v3/userinfo"
 },
     function (accessToken, refreshToken, profile, cb) {
         console.log(profile)
@@ -89,6 +43,10 @@ passport.use(new GoogleStrategy({
 ));
 
 
+
+
+
+app.set("view engine", "ejs")
 const commentSchema = mongoose.Schema({
     name: String,
     comment: String,
@@ -110,18 +68,30 @@ const postSchema = mongoose.Schema({
 const Post = new mongoose.model("post", postSchema);
 
 
+const userSchema = mongoose.Schema({
+    username: String,
+    password: String,
+    posts: [postSchema],
+    comment: [commentSchema],
+    googleId: String,
+    googleName: String
 
+})
+userSchema.plugin(passportlocalMongoose)
+userSchema.plugin(findOrCreate)
 
+const User = new mongoose.model("user", userSchema)
 
+passport.use(User.createStrategy());
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
 
-
-
-
-
-
-
-
-
+passport.deserializeUser(function (id, done) {
+    User.findById(id, function (err, user) {
+        done(err, user);
+    });
+});
 
 //FAcebook Auth//
 
@@ -129,7 +99,8 @@ const Post = new mongoose.model("post", postSchema);
 
 //Fcebook //
 
-
+mongoose.connect(`mongodb+srv://kerim:${process.env.PASSWORD}@cluster0-m839r.mongodb.net/loggerApp`, { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false })
+mongoose.set("useCreateIndex", true)
 app.get("/", (req, res) => {
     const currentUser = req.user
     Post.find({}, (err, result) => {
@@ -163,7 +134,7 @@ app.post("/article", (req, res) => {
         title: title,
         content: content,
         url: url,
-        username: req.user.username,
+        username: req.user.googleName,
         userid: req.user._id
     })
 
@@ -357,6 +328,6 @@ function isLoggedIn(req, res, next) {
     }
 }
 
-app.listen(process.env.PORT, () => {
+app.listen(3000 || process.env.PORT, () => {
     console.log("Server Has Started on Port 3000")
 })
