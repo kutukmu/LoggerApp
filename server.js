@@ -31,7 +31,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/article",
+    callbackURL: "https://sheltered-wildwood-71518.herokuapp.com//auth/google/article",
     userProfileURL: "https://www.google.com/oauth2/v3/userinfo"
 },
     function (accessToken, refreshToken, profile, cb) {
@@ -328,6 +328,6 @@ function isLoggedIn(req, res, next) {
     }
 }
 
-app.listen(3000, () => {
+app.listen(3000 || process.env.PORT, () => {
     console.log("Server Has Started on Port 3000")
 })
